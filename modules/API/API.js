@@ -14,8 +14,8 @@ import {
     setSubject
 } from '../../react/features/base/conference';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt';
-import { processExternalDeviceRequest } from '../../react/features/device-selection/functions';
 import { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
+import { processExternalDeviceRequest } from '../../react/features/device-selection/functions';
 import { isEnabled as isDropboxEnabled } from '../../react/features/dropbox';
 import { setE2EEKey } from '../../react/features/e2ee';
 import { invite } from '../../react/features/invite';
