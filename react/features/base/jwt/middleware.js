@@ -2,6 +2,7 @@
 
 import jwtDecode from 'jwt-decode';
 
+import { fetchCssOverride } from '../../css-override/actions';
 import { SET_CONFIG } from '../config';
 import { SET_LOCATION_URL } from '../connection';
 import {
@@ -146,6 +147,8 @@ function _setJWT(store, next, action) {
                     action.server = context.server;
                     action.tenant = context.tenant;
                     action.user = user;
+
+                    action.group && store.dispatch(fetchCssOverride(action.group));
 
                     user && _overwriteLocalParticipant(
                         store, { ...user,

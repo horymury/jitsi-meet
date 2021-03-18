@@ -1,12 +1,14 @@
 // @flow
 
 import ButtonGroup from '@atlaskit/button/button-group';
-import Button from '@atlaskit/button/standard-button';
 import Modal, { ModalFooter } from '@atlaskit/modal-dialog';
 import _ from 'lodash';
 import React, { Component } from 'react';
 
+import { getCssOverride } from '../../../../css-override/functions';
 import { translate } from '../../../i18n/functions';
+import StylableButton from '../../../react/components/web/StylableButton';
+import { connect } from '../../../redux';
 import type { DialogProps } from '../../constants';
 
 import ModalHeader from './ModalHeader';
@@ -30,6 +32,11 @@ const OK_BUTTON_ID = 'modal-dialog-ok-button';
  */
 type Props = {
     ...DialogProps,
+
+    /**
+     * Any css custom overrides for this component.
+     */
+    _cssOverride: Object,
 
     /**
      * Custom dialog header that replaces the standard heading.
@@ -261,14 +268,13 @@ class StatelessDialog extends Component<Props> {
         } = this.props;
 
         return (
-            <Button
+            <StylableButton
                 appearance = 'subtle'
                 id = { CANCEL_BUTTON_ID }
                 key = 'cancel'
                 onClick = { this._onCancel }
-                type = 'button'>
-                { t(this.props.cancelKey || 'dialog.Cancel') }
-            </Button>
+                text = { t(this.props.cancelKey || 'dialog.Cancel') }
+                type = 'button' />
         );
     }
 
@@ -288,18 +294,18 @@ class StatelessDialog extends Component<Props> {
         } = this.props;
 
         return (
-            <Button
+            <StylableButton
                 appearance = 'primary'
                 form = 'modal-dialog-form'
                 id = { OK_BUTTON_ID }
                 isDisabled = { this.props.okDisabled }
                 key = 'submit'
                 onClick = { this._onSubmit }
-                type = 'button'>
-                { t(this.props.okKey || 'dialog.Ok') }
-            </Button>
+                text = { t(this.props.okKey || 'dialog.Ok') }
+                type = 'button' />
         );
     }
+
 
     _setDialogElement: (?HTMLElement) => void;
 
@@ -314,6 +320,15 @@ class StatelessDialog extends Component<Props> {
      */
     _setDialogElement(element: ?HTMLElement) {
         this._dialogElement = element;
+        if (this._dialogElement && this.props._cssOverride.container) {
+            const containerProps = this.props._cssOverride.container;
+
+            Object.keys(containerProps).forEach(prop => {
+                this._dialogElement.parentElement.style[prop] = containerProps[prop];
+                this._dialogElement.parentElement.parentElement.style[prop] = containerProps[prop];
+            });
+
+        }
     }
 
     _onKeyDown: (Object) => void;
@@ -346,4 +361,18 @@ class StatelessDialog extends Component<Props> {
     }
 }
 
-export default translate(StatelessDialog);
+/**
+ * Maps part of the Redux state to the props of this component.
+ *
+ * @private
+ * @returns {{
+ *     _cssOverride: Object
+ * }}
+ */
+function _mapStateToProps() {
+    return {
+        _cssOverride: getCssOverride('Dialogs')
+    };
+}
+
+export default translate(connect(_mapStateToProps)(StatelessDialog));

@@ -10,6 +10,7 @@ import {
 } from '../../../base/participants';
 import { connect } from '../../../base/redux';
 import { updateSettings } from '../../../base/settings';
+import { getCssOverride } from '../../../css-override/functions';
 import { appendSuffix } from '../../functions';
 
 /**
@@ -22,6 +23,11 @@ type Props = {
      * edit mode. Can be different from what is shown when not editing.
      */
     _configuredDisplayName: string,
+
+    /**
+     * Any custom styles for the tenant.
+     */
+    _cssOverride: Object,
 
     /**
      * The participant's current display name which should be shown.
@@ -144,6 +150,7 @@ class DisplayName extends Component<Props, State> {
      */
     render() {
         const {
+            _cssOverride,
             _nameToDisplay,
             allowEditing,
             displayNameSuffix,
@@ -163,6 +170,7 @@ class DisplayName extends Component<Props, State> {
                     placeholder = { t('defaultNickname') }
                     ref = { this._setNameInputRef }
                     spellCheck = { 'false' }
+                    style = { _cssOverride.displayNameText }
                     type = 'text'
                     value = { this.state.editDisplayNameValue } />
             );
@@ -172,7 +180,8 @@ class DisplayName extends Component<Props, State> {
             <span
                 className = 'displayname'
                 id = { elementID }
-                onClick = { this._onStartEditing }>
+                onClick = { this._onStartEditing }
+                style = { _cssOverride.displayNameText }>
                 { appendSuffix(_nameToDisplay, displayNameSuffix) }
             </span>
         );
@@ -289,7 +298,8 @@ function _mapStateToProps(state, ownProps) {
     return {
         _configuredDisplayName: participant && participant.name,
         _nameToDisplay: getParticipantDisplayName(
-            state, participantID)
+            state, participantID),
+        _cssOverride: getCssOverride('Thumbnails')
     };
 }
 

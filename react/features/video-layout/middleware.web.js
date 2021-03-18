@@ -12,6 +12,8 @@ import { MiddlewareRegistry } from '../base/redux';
 import { TRACK_ADDED, TRACK_REMOVED, TRACK_STOPPED } from '../base/tracks';
 import { SET_FILMSTRIP_VISIBLE } from '../filmstrip';
 
+import { SET_TILE_VIEW } from './actionTypes';
+
 import './middleware.any';
 
 declare var APP: Object;
@@ -29,6 +31,8 @@ MiddlewareRegistry.register(store => next => action => {
     // Purposefully perform additional actions after state update to mimic
     // being connected to the store for updates.
     const result = next(action);
+    const dominantSpeaker = (store.getState()['features/base/participants'] || [])
+        .find(p => p.dominantSpeaker);
 
     switch (action.type) {
     case CONFERENCE_WILL_LEAVE:
@@ -38,6 +42,10 @@ MiddlewareRegistry.register(store => next => action => {
     case PARTICIPANT_JOINED:
         if (!action.participant.local) {
             VideoLayout.updateVideoMutedForNoTracks(action.participant.id);
+
+            // We need to run the dominant speaker changed handler when new participant joins
+            // in order to apply any override css.
+            VideoLayout.onDominantSpeakerChanged(dominantSpeaker?.id);
         }
         break;
 
@@ -76,6 +84,13 @@ MiddlewareRegistry.register(store => next => action => {
         if (!action.track.local && action.track.mediaType !== MEDIA_TYPE.AUDIO) {
             VideoLayout.updateVideoMutedForNoTracks(action.track.jitsiTrack.getParticipantId());
         }
+
+        break;
+
+    // Things to update when tile view state changes
+    case SET_TILE_VIEW:
+        // We need to run the dominant speaker changed handler when tile changes in order to apply any override css.
+        VideoLayout.onDominantSpeakerChanged(dominantSpeaker?.id);
 
         break;
     }

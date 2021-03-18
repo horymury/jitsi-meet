@@ -669,6 +669,50 @@ var config = {
     */
     // dynamicBrandingUrl: '',
 
+
+    /**
+     The root url for the css override json files. The json files are located in paths named as the tenant:
+     [CDN_URL]/[tenant]/custom_branding, which means that this feature is only available for authenticated users.
+     Example response json:
+    {
+        "Dialogs": {
+            "container": {
+                "backgroundColor": "#FF0000",
+                "color": "#00FF00"
+            }
+        },
+        "Thumbnails": {
+            "displayNameText": {
+                "color": "red"
+            },
+            "focused": {
+                "border": "2px solid red",
+                "boxShadow": "inset 0 0 3px green, 0 0 3px green"
+            },
+            "activeSpeaker": {
+                "border": "2px solid red",
+                "boxShadow": "0 0 5px 3px red"
+            }
+        },
+        "Buttons": {
+            "primary": {
+                "backgroundColor": "red",
+                "color": "green"
+            },
+            "subtle": {
+                "backgroundColor": "green",
+                "color": "red"
+            }
+        },
+        "Icons": {
+            "style": {
+                "fill": "green"
+            }
+        }
+    }
+    */
+    // cssOverrideUrl: '',
+
     // The URL of the moderated rooms microservice, if available. If it
     // is present, a link to the service will be rendered on the welcome page,
     // otherwise the app doesn't render it.

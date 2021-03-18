@@ -22,6 +22,7 @@ import {
 import { connect } from '../../../base/redux';
 import { ColorPalette, StyleType } from '../../../base/styles';
 import { isVpaasMeeting } from '../../../billing-counter/functions';
+import { getCssOverride } from '../../../css-override/functions';
 import { authorizeDropbox, updateDropboxToken } from '../../../dropbox';
 import { RECORDING_TYPES } from '../../constants';
 import { getRecordingDurationEstimation } from '../../functions';
@@ -30,6 +31,11 @@ import { DROPBOX_LOGO, ICON_SHARE, JITSI_LOGO } from './styles';
 
 
 type Props = {
+
+    /**
+     * Object containing custom styles for Dialogs.
+     */
+    _cssOverride: Object,
 
     /**
      * Style of the dialogs feature.
@@ -143,12 +149,15 @@ class StartRecordingDialogContent extends Component<Props> {
      * @returns {React$Component}
      */
     render() {
-        const { _styles: styles } = this.props;
+        const { _styles: styles, _cssOverride: cssOverride } = this.props;
 
         return (
             <Container
                 className = 'recording-dialog'
-                style = { styles.container }>
+                style = {{
+                    ...styles.container,
+                    ...cssOverride.container
+                }}>
                 { this._renderNoIntegrationsContent() }
                 { this._renderIntegrationsContent() }
                 { this._renderFileSharingContent() }
@@ -378,7 +387,7 @@ class StartRecordingDialogContent extends Component<Props> {
 
         // act like group, cannot toggle off
         if (selectedRecordingService
-                === RECORDING_TYPES.JITSI_REC_SERVICE) {
+            === RECORDING_TYPES.JITSI_REC_SERVICE) {
             return;
         }
 
@@ -403,7 +412,7 @@ class StartRecordingDialogContent extends Component<Props> {
 
         // act like group, cannot toggle off
         if (selectedRecordingService
-                === RECORDING_TYPES.DROPBOX) {
+            === RECORDING_TYPES.DROPBOX) {
             return;
         }
 
@@ -433,8 +442,10 @@ class StartRecordingDialogContent extends Component<Props> {
      * @returns {React$Component}
      */
     _renderSignOut() {
-        const { _styles: styles, spaceLeft, t, userName } = this.props;
+        const { _styles, _cssOverride, spaceLeft, t, userName } = this.props;
         const duration = getRecordingDurationEstimation(spaceLeft);
+        const styles = { ..._styles,
+            ..._cssOverride };
 
         return (
             <Container>
@@ -496,7 +507,8 @@ function _mapStateToProps(state) {
     return {
         ..._abstractMapStateToProps(state),
         isVpaas: isVpaasMeeting(state),
-        _styles: ColorSchemeRegistry.get(state, 'StartRecordingDialogContent')
+        _styles: ColorSchemeRegistry.get(state, 'StartRecordingDialogContent'),
+        _cssOverride: getCssOverride('Dialogs')
     };
 }
 
